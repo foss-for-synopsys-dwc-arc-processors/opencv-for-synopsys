@@ -309,7 +309,7 @@ public:
       : p(&_p), dist(_dist) {
     }
     bool operator<(const bbf_nn & rhs) const {
-      return dist < rhs.dist;
+      return this->dist < rhs.dist;
     }
   };
   typedef std::vector < bbf_nn > bbf_nn_pqueue;
@@ -321,7 +321,7 @@ private:
       : node(_node), dist(_dist) {
     }
     bool operator<(const bbf_node & rhs) const {
-      return dist > rhs.dist;
+      return this->dist > rhs.dist;
     }
   };
   typedef std::vector < bbf_node > bbf_pqueue;

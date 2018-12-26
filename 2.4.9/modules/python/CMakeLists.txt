@@ -5,7 +5,7 @@
 if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   ocv_module_disable(python)
 endif()
-if(ANDROID OR IOS OR NOT PYTHONLIBS_FOUND OR NOT PYTHON_USE_NUMPY)
+if(ANDROID OR  ARC OR IOS OR NOT PYTHONLIBS_FOUND OR NOT PYTHON_USE_NUMPY)
   ocv_module_disable(python)
 endif()
 

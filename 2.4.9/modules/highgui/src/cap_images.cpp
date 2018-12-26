@@ -255,10 +255,15 @@ bool CvCapture_Images::open(const char * _filename)
     for(;;)
     {
         sprintf(str, filename, offset + length);
-        struct stat s;
-        if(stat(str, &s))
-        {
-            if(length == 0 && offset == 0) // allow starting with 0 or 1
+        if(length == 0 && offset == 0) { // allow starting with 0 or 1
+#ifdef __CCAC__
+            FILE *f;
+            if ((f = fopen(str, "rb")) != NULL) fclose(f);
+            else
+#else
+            struct stat s;
+            if(stat(str, &s))
+#endif   
             {
                 offset++;
                 continue;

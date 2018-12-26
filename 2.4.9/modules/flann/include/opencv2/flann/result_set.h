@@ -295,7 +295,11 @@ public:
         }
         bool operator<(const DistIndex dist_index) const
         {
+#ifdef __CCAC__
+            return (this->dist_ < dist_index.dist_) || ((this->dist_ == dist_index.dist_) && this->index_ < dist_index.index_);
+#else         
             return (dist_ < dist_index.dist_) || ((dist_ == dist_index.dist_) && index_ < dist_index.index_);
+#endif
         }
         DistanceType dist_;
         unsigned int index_;

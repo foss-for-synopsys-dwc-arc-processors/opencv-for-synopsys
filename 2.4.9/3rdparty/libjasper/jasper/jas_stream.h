@@ -78,6 +78,10 @@
 
 #include <stdio.h>
 #include <limits.h>
+#ifndef PATH_MAX
+#define PATH_MAX 512
+#endif /* PATH_MAX */
+
 #if defined(HAVE_FCNTL_H)
 #include <fcntl.h>
 #endif

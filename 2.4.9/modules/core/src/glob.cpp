@@ -131,12 +131,15 @@ namespace
 
 }
 #else
+#ifndef __CCAC__
 # include <dirent.h>
 # include <sys/stat.h>
+#endif
 const char dir_separators[] = "/";
 const char native_separator = '/';
 #endif
 
+#ifndef __CCAC__
 static bool isDir(const cv::String& path, DIR* dir)
 {
 #if defined WIN32 || defined _WIN32 || defined WINCE
@@ -168,6 +171,7 @@ static bool isDir(const cv::String& path, DIR* dir)
     return is_dir != 0;
 #endif
 }
+#endif
 
 static bool wildcmp(const char *string, const char *wild)
 {
@@ -217,6 +221,17 @@ static bool wildcmp(const char *string, const char *wild)
     return *wild == 0;
 }
 
+#ifdef __CCAC__
+static void glob_rec(const cv::String& directory, const cv::String& wildchart, std::vector<cv::String>& result, bool recursive)
+{
+     //printf("glob_rec function is not implemented\n");
+}
+
+void cv::glob(String pattern, std::vector<String>& result, bool recursive)
+{
+     //printf("glob function is not implemented\n");  
+}
+#else
 static void glob_rec(const cv::String& directory, const cv::String& wildchart, std::vector<cv::String>& result, bool recursive)
 {
     DIR *dir;
@@ -291,3 +306,4 @@ void cv::glob(String pattern, std::vector<String>& result, bool recursive)
     glob_rec(path, wildchart, result, recursive);
     std::sort(result.begin(), result.end());
 }
+#endif

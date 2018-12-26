@@ -317,6 +317,7 @@ if(WIN32 AND WITH_FFMPEG)
 
   install(FILES "${ffmpeg_path}" DESTINATION ${OPENCV_BIN_INSTALL_PATH} COMPONENT libs RENAME "${ffmpeg_bare_name_ver}")
 endif()
-
+if (BUILD_MODULE MATCHES "ALL|highgui")
 ocv_add_accuracy_tests()
+endif()
 ocv_add_perf_tests()

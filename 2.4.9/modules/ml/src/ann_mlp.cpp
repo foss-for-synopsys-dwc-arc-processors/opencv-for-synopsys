@@ -1021,7 +1021,13 @@ int CvANN_MLP::train_backprop( CvVectors x0, CvVectors u, const double* sw )
 struct rprop_loop : cv::ParallelLoopBody {
   rprop_loop(const CvANN_MLP* _point, double**& _weights, int& _count, int& _ivcount, CvVectors* _x0,
      int& _l_count, CvMat*& _layer_sizes, int& _ovcount, int& _max_count,
-     CvVectors* _u, const double*& _sw, double& _inv_count, CvMat*& _dEdw, int& _dcount0, double* _E, int _buf_sz)
+     CvVectors* _u, const double*& _sw, double& _inv_count, CvMat*& _dEdw, int& _dcount0,
+#ifdef __CCAC__
+ double* _E_ARC,
+#else
+double* _E,
+#endif
+ int _buf_sz)
   {
     point = _point;
     weights = _weights;
@@ -1037,7 +1043,11 @@ struct rprop_loop : cv::ParallelLoopBody {
     inv_count = _inv_count;
     dEdw = _dEdw;
     dcount0 = _dcount0;
-    E = _E;
+#ifdef __CCAC__
+    E = _E_ARC;
+#else
+     E = _E;
+#endif
     buf_sz = _buf_sz;
   }
 

@@ -383,11 +383,14 @@ class GTEST_API_ SingleFailureChecker {
 // Assume other platforms have gettimeofday().
 // TODO(kenton@google.com): Use autoconf to detect availability of
 //   gettimeofday().
+#ifndef __CCAC__
 # define GTEST_HAS_GETTIMEOFDAY_ 1
-
+#endif
 // cpplint thinks that the header is already included, so we want to
 // silence it.
+#ifndef __CCAC__
 # include <sys/time.h>  // NOLINT
+#endif
 # include <unistd.h>  // NOLINT
 
 #endif  // GTEST_OS_LINUX
@@ -2324,7 +2327,9 @@ TimeInMillis GetTimeInMillis() {
   gettimeofday(&now, NULL);
   return static_cast<TimeInMillis>(now.tv_sec) * 1000 + now.tv_usec / 1000;
 #else
-# error "Don't know how to get the current time on your system."
+#ifdef __CCAC__
+   return   static_cast<TimeInMillis>(cv::getTickCount())*1000./cv::getTickFrequency();
+#endif
 #endif
 }
 
@@ -2741,8 +2746,12 @@ bool IsSubstringPred(const char* needle, const char* haystack) {
 bool IsSubstringPred(const wchar_t* needle, const wchar_t* haystack) {
   if (needle == NULL || haystack == NULL)
     return needle == haystack;
-
-  return wcsstr(haystack, needle) != NULL;
+#ifdef __CCAC__
+//printf("wcsstr is not supported\n");
+return  false;
+#else
+   return wcsstr(haystack, needle) != NULL;
+#endif
 }
 
 // StringType here can be either ::std::string or ::std::wstring.
@@ -2998,6 +3007,11 @@ inline UInt32 CreateCodePointFromUtf16SurrogatePair(wchar_t first,
 // and contains invalid UTF-16 surrogate pairs, values in those pairs
 // will be encoded as individual Unicode characters from Basic Normal Plane.
 std::string WideStringToUtf8(const wchar_t* str, int num_chars) {
+
+#ifdef __CCAC__
+  //printf("WideStringToUtf8 is not  supported\n");
+  return NULL;
+#else
   if (num_chars == -1)
     num_chars = static_cast<int>(wcslen(str));
 
@@ -3018,6 +3032,7 @@ std::string WideStringToUtf8(const wchar_t* str, int num_chars) {
     stream << CodePointToUtf8(unicode_code_point);
   }
   return StringStreamToString(&stream);
+#endif
 }
 
 // Converts a wide C string to an std::string using the UTF-8 encoding.
@@ -3038,8 +3053,12 @@ bool String::WideCStringEquals(const wchar_t * lhs, const wchar_t * rhs) {
   if (lhs == NULL) return rhs == NULL;
 
   if (rhs == NULL) return false;
-
-  return wcscmp(lhs, rhs) == 0;
+#ifdef __CCAC__
+//printf("wcscmp not is supported\n");
+  return  false;
+#else
+ return wcscmp(lhs, rhs) == 0;
+#endif
 }
 
 // Helper function for *_STREQ on wide strings.
@@ -3110,14 +3129,18 @@ bool String::CaseInsensitiveWideCStringEquals(const wchar_t* lhs,
 #elif GTEST_OS_LINUX && !GTEST_OS_LINUX_ANDROID
   return wcscasecmp(lhs, rhs) == 0;
 #else
-  // Android, Mac OS X and Cygwin don't define wcscasecmp.
+// Android, Mac OS X and Cygwin don't define wcscasecmp.
   // Other unknown OSes may not define it either.
+#ifdef __CCAC__
+  //printf("CaseInsensitiveWideCStringEquals is not supported\n");
+#else 
   wint_t left, right;
   do {
     left = towlower(*lhs++);
     right = towlower(*rhs++);
   } while (left && left == right);
   return left == right;
+#endif
 #endif  // OS selector
 }
 
@@ -4606,9 +4629,14 @@ void XmlUnitTestResultPrinter::OnTestIterationEnd(const UnitTest& unit_test,
   FilePath output_file(output_file_);
   FilePath output_dir(output_file.RemoveFileName());
 
+#ifdef __CCAC__
+   xmlout = posix::FOpen(output_file_.c_str(), "w");
+#else
   if (output_dir.CreateDirectoriesRecursively()) {
     xmlout = posix::FOpen(output_file_.c_str(), "w");
   }
+#endif
+
   if (xmlout == NULL) {
     // TODO(wan): report the reason of the failure.
     //
@@ -7982,8 +8010,13 @@ FilePath FilePath::GetCurrentDir() {
   char cwd[GTEST_PATH_MAX_ + 1] = { '\0' };
   return FilePath(_getcwd(cwd, sizeof(cwd)) == NULL ? "" : cwd);
 #else
-  char cwd[GTEST_PATH_MAX_ + 1] = { '\0' };
-  return FilePath(getcwd(cwd, sizeof(cwd)) == NULL ? "" : cwd);
+#ifdef  __CCAC__
+   //printf("Curentdir is hardcoded to . \n");
+  return FilePath(".");
+#else
+   char cwd[GTEST_PATH_MAX_ + 1] = { '\0' };
+   return FilePath(getcwd(cwd, sizeof(cwd)) == NULL ? "" : cwd);
+#endif
 #endif  // GTEST_OS_WINDOWS_MOBILE
 }
 
@@ -8201,7 +8234,12 @@ bool FilePath::CreateFolder() const {
 #elif GTEST_OS_WINDOWS
   int result = _mkdir(pathname_.c_str());
 #else
-  int result = mkdir(pathname_.c_str(), 0777);
+#ifdef __CCAC__
+  //printf("mkdir is not  supported\n");
+  int result = 0;
+#else
+   int result = mkdir(pathname_.c_str(), 0777);
+#endif
 #endif  // GTEST_OS_WINDOWS_MOBILE
 
   if (result == -1) {
@@ -8764,7 +8802,7 @@ GTestLog::~GTestLog() {
 class CapturedStream {
  public:
   // The ctor redirects the stream to a temporary file.
-  explicit CapturedStream(int fd) : fd_(fd), uncaptured_fd_(dup(fd)) {
+ explicit CapturedStream(int fd) : fd_(fd), uncaptured_fd_(dup(fd)) {
 # if GTEST_OS_WINDOWS
     char temp_dir_path[MAX_PATH + 1] = { '\0' };  // NOLINT
     char temp_file_path[MAX_PATH + 1] = { '\0' };  // NOLINT
@@ -8808,8 +8846,8 @@ class CapturedStream {
     filename_ = name_template;
 # endif  // GTEST_OS_WINDOWS
     fflush(NULL);
-    dup2(captured_fd, fd_);
-    close(captured_fd);
+   dup2(captured_fd, fd_);
+   close(captured_fd);
   }
 
   ~CapturedStream() {
@@ -9383,7 +9421,12 @@ void PrintTo(const wchar_t* s, ostream* os) {
     *os << "NULL";
   } else {
     *os << ImplicitCast_<const void*>(s) << " pointing to ";
+
+#ifdef __CCAC__ 
+    //printf("wcslen is not supported\n");
+#else
     PrintCharsAsStringTo(s, wcslen(s), os);
+#endif
   }
 }
 #endif  // wchar_t is native

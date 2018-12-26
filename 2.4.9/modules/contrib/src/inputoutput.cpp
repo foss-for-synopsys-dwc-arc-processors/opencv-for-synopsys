@@ -1,6 +1,30 @@
-
+#ifdef  __CCAC__
 #include "opencv2/contrib/contrib.hpp"
 #include <cvconfig.h>
+namespace cv
+{
+    std::vector<std::string> Directory::GetListFiles( const std::string& path, const std::string & exten, bool addPath )
+    {
+        //printf("GetListFiles is not implemented\n");
+        return (std::vector<std::string>) NULL;
+    }
+
+    std::vector<std::string> Directory::GetListFolders( const std::string& path, const std::string & exten, bool addPath )
+    {
+        //printf("GetListFolders is not implemented\n");
+        return (std::vector<std::string>) NULL;
+    }
+
+    std::vector<std::string> Directory::GetListFilesR ( const std::string& path, const std::string & exten, bool addPath )
+    {
+        //printf("GetListFilesR is not implemented\n");
+        return (std::vector<std::string>) NULL;
+    }
+}
+#else
+#include "opencv2/contrib/contrib.hpp"
+#include <cvconfig.h>
+
 
 #if defined(WIN32) || defined(_WIN32)
     #include <windows.h>
@@ -203,3 +227,4 @@ namespace cv
     }
 
 }
+#endif

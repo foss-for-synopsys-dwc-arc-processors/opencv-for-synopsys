@@ -556,6 +556,17 @@ macro(ocv_create_module)
     target_link_libraries(${the_module} ${OPENCV_MODULE_${the_module}_DEPS_EXT} ${OPENCV_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
   endif()
 
+  # Include directory (for evthreads.h)
+  include_directories(${EVRT_INSTALL_DIR}/include)
+  include_directories(${EVRT_INSTALL_DIR}/include/VX/framework)
+  include_directories(${EVRT_INSTALL_DIR}/include/VX/debug)
+
+  include(evrt)
+  find_package(evthreads CONFIG)
+
+  # Link with Vision runtime Library
+  target_link_libraries(${the_module}  evthreads::evthreads)
+
   add_dependencies(opencv_modules ${the_module})
 
   if(ENABLE_SOLUTION_FOLDERS)
@@ -645,10 +656,14 @@ macro(ocv_define_module module_name)
   ocv_glob_module_sources(${exclude_cuda})
   ocv_create_module()
   ocv_add_precompiled_headers(${the_module})
-
+if (BUILD_MODULE MATCHES "${module_name}|ALL")
+message (WARNING "======= BUILD ${module_name} TEST=========")
   ocv_add_accuracy_tests()
-  ocv_add_perf_tests()
-  ocv_add_samples()
+endif()
+  if(EVSS_OPENCV_PERF)
+   ocv_add_perf_tests()
+   ocv_add_samples()
+  endif() 
 endmacro()
 
 # ensures that all passed modules are available

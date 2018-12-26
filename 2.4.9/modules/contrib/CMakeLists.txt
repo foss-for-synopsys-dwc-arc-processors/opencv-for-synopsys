@@ -1,1 +1,5 @@
-ocv_define_module(contrib opencv_imgproc opencv_calib3d opencv_features2d opencv_ml opencv_video opencv_objdetect OPTIONAL opencv_highgui opencv_nonfree)
+if(EVSS_OPENCV_REDUCE)
+ocv_module_disable(contrib)
+else()
+ocv_define_module(contrib opencv_imgproc opencv_calib3d opencv_features2d opencv_ml opencv_video opencv_objdetect OPTIONAL opencv_highgui opencv_nonfree)  
+endif()

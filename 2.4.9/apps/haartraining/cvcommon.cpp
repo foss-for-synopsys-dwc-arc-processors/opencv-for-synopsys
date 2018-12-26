@@ -91,10 +91,17 @@ int icvMkDir( const char* filename )
                 }
             }
 #else /* _WIN32 */
+#ifdef  __CCAC__
+             //printf("stat and mkdir IO functions are not supported on ARC\n");
+             return 0;
+#else
             if( stat( path, &st ) != 0 )
-            {
-                if( mkdir( path, mode ) != 0 ) return 0;
-            }
+             {
+               if( mkdir( path, mode ) != 0 ) return 0;
+             }
+#endif
+
+
 #endif /* _WIN32 */
         }
 

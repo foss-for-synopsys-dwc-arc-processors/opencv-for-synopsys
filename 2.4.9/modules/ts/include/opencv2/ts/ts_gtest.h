@@ -133,9 +133,15 @@
 // files are expected to #include this.  Therefore, it cannot #include
 // any other Google Test header.
 
-#ifndef GTEST_INCLUDE_GTEST_INTERNAL_GTEST_PORT_H_
-#define GTEST_INCLUDE_GTEST_INTERNAL_GTEST_PORT_H_
-
+#ifndef  GTEST_INCLUDE_GTEST_INTERNAL_GTEST_PORT_H_
+#define  GTEST_INCLUDE_GTEST_INTERNAL_GTEST_PORT_H_
+#ifdef __CCAC__
+#define  GTEST_HAS_GLOBAL_WSTRING 0
+#define  GTEST_HAS_STD_WSTRING 0
+#define  GTEST_HAS_POSIX_RE  0
+#define  GTEST_HAS_PTHREAD 0
+#define GTEST_HAS_STREAM_REDIRECTION 0
+#endif
 // The user can define the following macros in the build script to
 // control Google Test's behavior.  If the user doesn't define a macro
 // in this list, Google Test will define it.
@@ -423,7 +429,9 @@
 // is not the case, we need to include headers that provide the functions
 // mentioned above.
 # include <unistd.h>
+#ifndef __CCAC__
 # include <strings.h>
+#endif
 #elif !GTEST_OS_WINDOWS_MOBILE
 # include <direct.h>
 # include <io.h>
@@ -2898,12 +2906,31 @@ typedef struct stat StatStruct;
 
 inline int FileNo(FILE* file) { return fileno(file); }
 inline int IsATTY(int fd) { return isatty(fd); }
-inline int Stat(const char* path, StatStruct* buf) { return stat(path, buf); }
+inline int Stat(const char* path, StatStruct* buf) {
+#ifdef __CCAC__
+//printf("stat is not implemented\n");
+return 0; 
+#else
+ return stat(path, buf);
+#endif
+}
 inline int StrCaseCmp(const char* s1, const char* s2) {
+#ifdef __CCAC__
+//printf("strcasecmp is not implemented\n");
+return 0; 
+#else
   return strcasecmp(s1, s2);
+#endif
 }
 inline char* StrDup(const char* src) { return strdup(src); }
-inline int RmDir(const char* dir) { return rmdir(dir); }
+inline int RmDir(const char* dir) { 
+#ifdef __CCAC__
+//printf("rmdir is not implemented\n");
+return 0; 
+#else
+return rmdir(dir);
+#endif 
+}
 inline bool IsDir(const StatStruct& st) { return S_ISDIR(st.st_mode); }
 
 #endif  // GTEST_OS_WINDOWS
@@ -2925,7 +2952,14 @@ inline const char* StrNCpy(char* dest, const char* src, size_t n) {
 // defined there.
 
 #if !GTEST_OS_WINDOWS_MOBILE
-inline int ChDir(const char* dir) { return chdir(dir); }
+inline int ChDir(const char* dir) {
+#ifdef __CCAC__
+//printf("chdir is not implemented\n");
+return 0; 
+#else
+ return chdir(dir); 
+#endif
+}
 #endif
 inline FILE* FOpen(const char* path, const char* mode) {
   return fopen(path, mode);
@@ -2939,10 +2973,20 @@ inline FILE* FDOpen(int fd, const char* mode) { return fdopen(fd, mode); }
 inline int FClose(FILE* fp) { return fclose(fp); }
 #if !GTEST_OS_WINDOWS_MOBILE
 inline int Read(int fd, void* buf, unsigned int count) {
-  return static_cast<int>(read(fd, buf, count));
+#ifdef __CCAC__
+//printf("Read is not implemented\n");
+return 0; 
+#else
+return static_cast<int>(read(fd, buf, count));
+#endif
 }
 inline int Write(int fd, const void* buf, unsigned int count) {
+#ifdef __CCAC__
+//printf("Write is not implemented\n");
+return 0; 
+#else
   return static_cast<int>(write(fd, buf, count));
+#endif
 }
 inline int Close(int fd) { return close(fd); }
 inline const char* StrError(int errnum) { return strerror(errnum); }

@@ -54,7 +54,7 @@
 /////// exchange-add operation for atomic operations on reference counters ///////
 #if defined __INTEL_COMPILER && !(defined WIN32 || defined _WIN32)   // atomic increment on the linux version of the Intel(tm) compiler
   #define CV_XADD(addr,delta) _InterlockedExchangeAdd(const_cast<void*>(reinterpret_cast<volatile void*>(addr)), delta)
-#elif defined __GNUC__
+#elif defined __GNUC__ && !defined __CCAC__
 
   #if defined __clang__ && __clang_major__ >= 3 && !defined __ANDROID__ && !defined __EMSCRIPTEN__
     #ifdef __ATOMIC_SEQ_CST

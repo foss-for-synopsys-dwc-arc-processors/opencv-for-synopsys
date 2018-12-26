@@ -62,7 +62,7 @@
 #  endif
 #endif
 
-#if !defined WIN32 && !defined WINCE
+#if !defined WIN32 && !defined WINCE && !defined __CCAC__
 #  include <pthread.h>
 #endif
 

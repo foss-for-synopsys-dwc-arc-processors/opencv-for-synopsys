@@ -1,2 +1,6 @@
 set(the_description "Object Detection")
-ocv_define_module(objdetect opencv_core opencv_imgproc OPTIONAL opencv_highgui)
+if(EVSS_OPENCV_REDUCE)
+ocv_module_disable(objdetect)
+else()
+ocv_define_module(objdetect opencv_core opencv_imgproc OPTIONAL opencv_highgui)  
+endif()

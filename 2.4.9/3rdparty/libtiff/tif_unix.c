@@ -101,8 +101,14 @@ static uint64
 _tiffSizeProc(thandle_t fd)
 {
     struct stat sb;
+#ifdef __CCAC__
+  //printf("fstat is not supported \n");
+ if (1)
+  return (0);
+#else
     if (fstat((int)fd,&sb)<0)
         return(0);
+#endif
     else
         return((uint64)sb.st_size);
 }

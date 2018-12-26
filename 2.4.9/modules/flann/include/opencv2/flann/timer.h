@@ -75,7 +75,11 @@ public:
     void stop()
     {
         clock_t stopTime = clock();
+#ifdef __CCAC__
+        value += ( (double)(unsigned)(stopTime - startTime) ) / CLOCKS_PER_SEC;
+#else
         value += ( (double)stopTime - startTime) / CLOCKS_PER_SEC;
+#endif
     }
 
     /**

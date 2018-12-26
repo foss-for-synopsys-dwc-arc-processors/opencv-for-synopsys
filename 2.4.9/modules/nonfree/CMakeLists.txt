@@ -2,6 +2,7 @@ if(BUILD_ANDROID_PACKAGE)
   ocv_module_disable(nonfree)
 endif()
 
+
 set(the_description "Functionality with possible limitations on the use")
 ocv_warnings_disable(CMAKE_CXX_FLAGS -Wundef -Wshadow)
 if(ENABLE_DYNAMIC_CUDA)

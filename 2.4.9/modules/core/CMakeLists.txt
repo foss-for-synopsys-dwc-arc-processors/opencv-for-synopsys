@@ -55,5 +55,13 @@ endif()
 ocv_create_module()
 ocv_add_precompiled_headers(${the_module})
 
+message(WARNING  "BUILD_MODULE  ${BUILD_MODULE}_____")
+if ("${BUILD_MODULE}" MATCHES "core|ALL")
+message(WARNING "++++++++++++++++ BUILD CORE TESTS ++++++++++")
 ocv_add_accuracy_tests()
-ocv_add_perf_tests()
+endif()
+
+if(EVSS_OPENCV_PERF)
+   ocv_add_perf_tests()
+endif() 
+ 

@@ -140,8 +140,12 @@ std::wstring GetTempFileNameWinRT(std::wstring prefix)
 
 #endif
 #else
+#ifdef __CCAC__
+#include <evthreads.h>
+#else
 #include <pthread.h>
 #include <sys/time.h>
+#endif
 #include <time.h>
 
 #if defined __MACH__ && defined __APPLE__
@@ -308,6 +312,8 @@ int64 getTickCount(void)
     return (int64)tp.tv_sec*1000000000 + tp.tv_nsec;
 #elif defined __MACH__ && defined __APPLE__
     return (int64)mach_absolute_time();
+#elif defined __CCAC__
+    return getRTC();
 #else
     struct timeval tv;
     struct timezone tz;
@@ -334,7 +340,11 @@ double getTickFrequency(void)
     }
     return freq;
 #else
+#ifdef __CCAC__
+    return 1/(EVSS_CFG_SEC_PER_RTC_TICK);
+#else
     return 1e6;
+#endif
 #endif
 }
 
@@ -487,11 +497,18 @@ string tempfile( const char* suffix )
             fname += "/";
         fname += "__opencv_temp.XXXXXX";
     }
-
-    const int fd = mkstemp((char*)fname.c_str());
-    if (fd == -1) return string();
-
-    close(fd);
+#ifdef __CCAC__
+    FILE *fd = fopen((const char *)fname.c_str(), "w+");
+    if (fd == NULL) return string();
+ 
+    fclose(fd);
+#else
+     const int fd = mkstemp((char*)fname.c_str());
+     if (fd == -1) return string();
+ 
+     close(fd);
+#endif
+  
     remove(fname.c_str());
 # endif
 
@@ -905,6 +922,19 @@ struct Mutex::Impl
     pthread_spinlock_t sl;
     int refcount;
 };
+#elif defined __CCAC__
+
+struct Mutex::Impl
+{
+     Impl() { refcount = 1; }
+    ~Impl() {  }
+
+    void lock() { /*printf("lock is not implemented\n"); */ }
+    bool trylock() { /*printf("trylock is not implemented\n");*/   return true; }
+    void unlock() { /*printf("unlock is not implemented\n");*/ }
+    
+    int refcount;
+};
 
 #else
 
@@ -1059,22 +1089,33 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID)
 #endif
 
 #else
+#ifndef __CCAC__
     static pthread_key_t tlsKey = 0;
     static pthread_once_t tlsKeyOnce = PTHREAD_ONCE_INIT;
-
+#endif
     static void deleteTLSStorage(void* data)
     {
         delete (TLSStorage*)data;
     }
 
     static void makeKey()
-    {
-        int errcode = pthread_key_create(&tlsKey, deleteTLSStorage);
+    { 
+#ifdef __CCAC__ 
+        // printf("makekey function is not implemnented \n");
+        int errcode = 1;
         CV_Assert(errcode == 0);
+#else
+       int errcode = pthread_key_create(&tlsKey, deleteTLSStorage);
+        CV_Assert(errcode == 0);
+#endif
     }
 
     inline TLSStorage* TLSStorage::get()
     {
+#ifdef __CCAC__ 
+        //printf("TLSSTORAGE::get function is not implemented\n");
+        return(TLSStorage*) 1;
+#else
         pthread_once(&tlsKeyOnce, makeKey);
         TLSStorage* d = (TLSStorage*)pthread_getspecific(tlsKey);
         if( !d )
@@ -1083,6 +1124,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID)
             pthread_setspecific(tlsKey, d);
         }
         return d;
+#endif
     }
 #endif
 

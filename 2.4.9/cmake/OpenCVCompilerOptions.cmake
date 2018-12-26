@@ -48,7 +48,11 @@ macro(add_extra_compiler_option option)
 endmacro()
 
 # OpenCV fails some tests when 'char' is 'unsigned' by default
-add_extra_compiler_option(-fsigned-char)
+if(ARC)
+  add_extra_compiler_option(-Hoff=Char_default_unsigned)
+else()
+  add_extra_compiler_option(-fsigned-char)
+endif()
 
 if(MINGW)
   # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=40838
@@ -254,7 +258,7 @@ if(MSVC)
 endif()
 
 # Extra link libs if the user selects building static libs:
-if(NOT BUILD_SHARED_LIBS AND CMAKE_COMPILER_IS_GNUCXX AND NOT ANDROID)
+if(NOT BUILD_SHARED_LIBS AND CMAKE_COMPILER_IS_GNUCXX AND NOT ANDROID AND NOT ARC)
   # Android does not need these settings because they are already set by toolchain file
   set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} stdc++)
   set(OPENCV_EXTRA_FLAGS "-fPIC ${OPENCV_EXTRA_FLAGS}")

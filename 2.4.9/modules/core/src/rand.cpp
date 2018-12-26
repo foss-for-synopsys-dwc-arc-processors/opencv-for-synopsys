@@ -775,7 +775,24 @@ RNG& theRNG()
 }
 #endif //HAVE_WINRT
 #else
+#ifdef __CCAC__
+__declspec( thread ) RNG* rng = NULL;
 
+ void deleteThreadRNGData()
+ {
+    if (rng)
+        delete rng;
+}
+
+RNG& theRNG()
+{
+    if (!rng)
+    {
+        rng =  new RNG;
+    }
+    return *rng;
+}
+#else
 static pthread_key_t tlsRNGKey = 0;
 static pthread_once_t tlsRNGKeyOnce = PTHREAD_ONCE_INIT;
 
@@ -803,7 +820,7 @@ RNG& theRNG()
 }
 
 #endif
-
+#endif
 }
 
 void cv::randu(InputOutputArray dst, InputArray low, InputArray high)
