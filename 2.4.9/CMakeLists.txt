@@ -196,7 +196,7 @@ OCV_OPTION(BUILD_PERF_TESTS         "Build performance tests"                   
 # OCV_OPTION(BUILD_PERF_TESTS         "Build performance tests"                     OFF )
 OCV_OPTION(BUILD_TESTS              "Build accuracy & regression tests"           ON  IF (NOT IOS) )
 OCV_OPTION(BUILD_WITH_DEBUG_INFO    "Include debug info into debug libs (not MSCV only)" ON )
-if(DEFINED WINDOWS)
+if( CMAKE_BUILD_TYPE STREQUAL "Release" )
 OCV_OPTION(BUILD_WITH_STATIC_CRT    "Enables use of staticaly linked CRT for staticaly linked OpenCV" OFF IF MSVC)
 else()
 OCV_OPTION(BUILD_WITH_STATIC_CRT    "Enables use of staticaly linked CRT for staticaly linked OpenCV" ON IF MSVC )
