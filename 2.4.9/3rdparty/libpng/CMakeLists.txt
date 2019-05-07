@@ -54,6 +54,6 @@ if(ENABLE_SOLUTION_FOLDERS)
   set_target_properties(${PNG_LIBRARY} PROPERTIES FOLDER "3rdparty")
 endif()
 
-if(NOT BUILD_SHARED_LIBS)
+#if(NOT BUILD_SHARED_LIBS)
   ocv_install_target(${PNG_LIBRARY} EXPORT OpenCVModules ARCHIVE DESTINATION ${OPENCV_3P_LIB_INSTALL_PATH} COMPONENT dev)
-endif()
+#endif()
