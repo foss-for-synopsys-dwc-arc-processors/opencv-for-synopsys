@@ -1,7 +1,30 @@
 set(the_description "The Core Functionality")
 
+# Add evthreads to OpenCV dependencies; this is required for being able to
+# export OpenCV meta-package, but only works if all dependencies are within
+# the same set of CMake Files (i.e. top-level build)
+# Therefore, we need to check if evthreads is inside the "as_subproject" list
+# (using old list (FIND) syntax, because OpenCV uses old CMake) and revert to
+# the old hack in OpenCVModules.cmake if evthreads is not a subproject.
+list (FIND as_subproject "evthreads" evthreads_as_subproject)
+if(${evthreads_as_subproject} GREATER -1)
+set(evthreads_module "evthreads")
+include (evrt)
+if (NOT DEFINED HOST)
+find_package(evthreads CONFIG)
+list(APPEND OpenCVModules_TARGETS evthreads includes config)
+if (DEFINED ARC)
+list(APPEND OpenCVModules_TARGETS crt)
+endif(DEFINED ARC)
+endif(NOT DEFINED HOST)
+endif()
+
 if (NOT HAVE_CUDA OR ENABLE_DYNAMIC_CUDA)
+if (DEFINED HOST)
   ocv_add_module(core PRIVATE_REQUIRED ${ZLIB_LIBRARIES})
+else(DEFINED HOST)
+  ocv_add_module(core PRIVATE_REQUIRED ${ZLIB_LIBRARIES} ${evthreads_module})
+endif(DEFINED HOST)
 else()
   ocv_add_module(core PRIVATE_REQUIRED ${ZLIB_LIBRARIES} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
 endif()

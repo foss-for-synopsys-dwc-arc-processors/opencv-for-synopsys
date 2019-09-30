@@ -27,8 +27,7 @@ else(NOT CMAKE_TOOLCHAIN_FILE)
   # any crosscompiling
   set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Installation Directory")
 endif(NOT CMAKE_TOOLCHAIN_FILE)
-#set The install directori to top of sotware dir
-set(CMAKE_INSTALL_PREFIX ${EVRT_INSTALL_PREFIX}-${EVRT_INSTALL_TYPE})
+include (evrt)
 
 # --------------------------------------------------------------
 # Top level OpenCV project
@@ -141,7 +140,8 @@ endif()
 
 # Optional 3rd party components
 # ===================================================
-OCV_OPTION(WITH_1394           "Include IEEE1394 support"                    OFF   IF (NOT WIN32) )
+OCV_OPTION(WITH_1394           "Include IEEE1394 support"
+OFF   IF (NOT WIN32) )
 OCV_OPTION(WITH_AVFOUNDATION   "Use AVFoundation for Video I/O"              ON   IF IOS)
 OCV_OPTION(WITH_CARBON         "Use Carbon for UI instead of Cocoa"          OFF  IF APPLE )
 OCV_OPTION(WITH_CUDA           "Include NVidia Cuda Runtime support"         OFF  )

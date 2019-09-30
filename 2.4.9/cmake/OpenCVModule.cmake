@@ -556,6 +556,11 @@ macro(ocv_create_module)
     target_link_libraries(${the_module} ${OPENCV_MODULE_${the_module}_DEPS_EXT} ${OPENCV_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
   endif()
 
+# if not using top-level build, we cannot (easily) export an OpenCV metapackage
+# without changing/updating all CMake infrastructure in OpenCV. So, we revert
+# to old behavior in this case and manually link to evthreads here.
+list (FIND as_subproject "evthreads" var)
+if(NOT (${var} GREATER -1))
   # Include directory (for evthreads.h)
   include_directories(${EVRT_INSTALL_DIR}/include)
   include_directories(${EVRT_INSTALL_DIR}/include/VX/framework)
@@ -566,6 +571,7 @@ macro(ocv_create_module)
 
   # Link with Vision runtime Library
   target_link_libraries(${the_module}  evthreads::evthreads)
+endif()
 
   add_dependencies(opencv_modules ${the_module})
 
