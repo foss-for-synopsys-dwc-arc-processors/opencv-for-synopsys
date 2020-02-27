@@ -561,6 +561,7 @@ macro(ocv_create_module)
 # to old behavior in this case and manually link to evthreads here.
 list (FIND as_subproject "evthreads" var)
 if(NOT (${var} GREATER -1))
+ if (NOT HOST)
   # Include directory (for evthreads.h)
   include_directories(${EVRT_INSTALL_DIR}/include)
   include_directories(${EVRT_INSTALL_DIR}/include/VX/framework)
@@ -571,6 +572,7 @@ if(NOT (${var} GREATER -1))
 
   # Link with Vision runtime Library
   target_link_libraries(${the_module}  evthreads::evthreads)
+ endif()
 endif()
 
   add_dependencies(opencv_modules ${the_module})
