@@ -429,7 +429,7 @@ include(cmake/OpenCVCompilerOptions.cmake)
 #Use Hnocrt flag to be able to link Vision CRTs
 
 if(ARC)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Hstack=9701520 -Hheap=373000000 -zallow_memory_overlap")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 endif()
 
 
