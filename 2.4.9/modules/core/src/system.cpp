@@ -313,7 +313,7 @@ int64 getTickCount(void)
 #elif defined __MACH__ && defined __APPLE__
     return (int64)mach_absolute_time();
 #elif defined __CCAC__
-    return getRTC();
+    return evGetTimeInCycles();
 #else
     struct timeval tv;
     struct timezone tz;

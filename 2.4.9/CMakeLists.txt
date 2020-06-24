@@ -156,8 +156,11 @@ OCV_OPTION(WITH_GSTREAMER      "Include Gstreamer support"                   ON 
 OCV_OPTION(WITH_GTK            "Include GTK support"                         ON   IF (UNIX AND NOT APPLE AND NOT ANDROID) )
 OCV_OPTION(WITH_IMAGEIO        "ImageIO support for OS X"                    OFF  IF APPLE )
 OCV_OPTION(WITH_IPP            "Include Intel IPP support"                   OFF  IF (MSVC OR X86 OR X86_64) )
+#OCV_OPTION(WITH_JASPER         "Include JPEG2K support"                      ON   IF (NOT IOS))
 OCV_OPTION(WITH_JASPER         "Include JPEG2K support"                      ON   IF (NOT IOS AND NOT ARC) )
 OCV_OPTION(WITH_JPEG           "Include JPEG support"                        ON)
+#OCV_OPTION(WITH_OPENEXR        "Include ILM support via OpenEXR"             OFF )
+#OCV_OPTION(WITH_OPENEXR        "Include ILM support via OpenEXR"             ON   IF (NOT IOS))
 OCV_OPTION(WITH_OPENEXR        "Include ILM support via OpenEXR"             ON   IF (NOT IOS AND NOT ARC) )
 OCV_OPTION(WITH_OPENGL         "Include OpenGL support"                      OFF  IF (NOT ANDROID) )
 OCV_OPTION(WITH_OPENNI         "Include OpenNI support"                      OFF  IF (NOT ANDROID AND NOT IOS) )
@@ -185,7 +188,8 @@ OCV_OPTION(WITH_INTELPERC      "Include Intel Perceptual Computing support"  OFF
 
 # OpenCV build components
 # ===================================================
-OCV_OPTION(BUILD_SHARED_LIBS        "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)"  NOT (ANDROID OR IOS OR ARC OR WIN32))
+OCV_OPTION(BUILD_SHARED_LIBS        "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)"  OFF)
+#OCV_OPTION(BUILD_SHARED_LIBS        "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)"  NOT (ANDROID OR IOS OR ARC OR WIN32))
 #OCV_OPTION(BUILD_SHARED_LIBS        "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)" NOT (ANDROID OR IOS OR ARC) )
 OCV_OPTION(BUILD_opencv_apps        "Build utility applications (used for example to train classifiers)" (NOT ANDROID) IF (NOT IOS) )
 OCV_OPTION(BUILD_ANDROID_EXAMPLES   "Build examples for Android platform"         ON  IF ANDROID )
@@ -196,11 +200,11 @@ OCV_OPTION(BUILD_PERF_TESTS         "Build performance tests"                   
 # OCV_OPTION(BUILD_PERF_TESTS         "Build performance tests"                     OFF )
 OCV_OPTION(BUILD_TESTS              "Build accuracy & regression tests"           ON  IF (NOT IOS) )
 OCV_OPTION(BUILD_WITH_DEBUG_INFO    "Include debug info into debug libs (not MSCV only)" ON )
-if( CMAKE_BUILD_TYPE STREQUAL "Release" )
-OCV_OPTION(BUILD_WITH_STATIC_CRT    "Enables use of staticaly linked CRT for staticaly linked OpenCV" OFF IF MSVC)
-else()
+#if( CMAKE_BUILD_TYPE STREQUAL "Release" )
+#OCV_OPTION(BUILD_WITH_STATIC_CRT    "Enables use of staticaly linked CRT for staticaly linked OpenCV" OFF IF MSVC)
+#else()
 OCV_OPTION(BUILD_WITH_STATIC_CRT    "Enables use of staticaly linked CRT for staticaly linked OpenCV" ON IF MSVC )
-endif()
+#endif()
 OCV_OPTION(BUILD_FAT_JAVA_LIB       "Create fat java wrapper containing the whole OpenCV library" ON IF NOT BUILD_SHARED_LIBS AND CMAKE_COMPILER_IS_GNUCXX )
 OCV_OPTION(BUILD_ANDROID_SERVICE    "Build OpenCV Manager for Google Play" OFF IF ANDROID AND ANDROID_SOURCE_TREE )
 OCV_OPTION(BUILD_ANDROID_PACKAGE    "Build platform-specific package for Google Play" OFF IF ANDROID )
@@ -211,7 +215,8 @@ OCV_OPTION(BUILD_TIFF               "Build libtiff from source"          ON)
 OCV_OPTION(BUILD_JASPER             "Build libjasper from source"        ON)
 OCV_OPTION(BUILD_JPEG               "Build libjpeg from source"          ON)
 OCV_OPTION(BUILD_PNG                "Build libpng from source"           ON)
-OCV_OPTION(BUILD_OPENEXR            "Build openexr from source"          WIN32 OR ANDROID OR APPLE )
+OCV_OPTION(BUILD_OPENEXR            "Build openexr from source"          ON)
+#OCV_OPTION(BUILD_OPENEXR            "Build openexr from source"          WIN32 OR ANDROID OR APPLE )
 OCV_OPTION(BUILD_TBB                "Download and build TBB from source" ANDROID )
 
 # OpenCV installation options
@@ -429,7 +434,7 @@ include(cmake/OpenCVCompilerOptions.cmake)
 #Use Hnocrt flag to be able to link Vision CRTs
 
 if(ARC)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ")
 endif()
 
 
@@ -934,8 +939,9 @@ if(DEFINED WITH_V4L)
   else()
     set(HAVE_CAMV4L2_STR "NO")
   endif()
-  status("    V4L/V4L2:"       HAVE_LIBV4L         THEN "Using libv4l (ver ${ALIASOF_libv4l1_VERSION})"
-                                                   ELSE "${HAVE_CAMV4L_STR}/${HAVE_CAMV4L2_STR}")
+ status("    V4L/V4L2:"       HAVE_LIBV4L
+             THEN "Using libv4l1 (ver ${ALIASOF_libv4l1_VERSION}) / libv4l2 (ver ${ALIASOF_libv4l2_VERSION})"
+             ELSE "${HAVE_CAMV4L_STR}/${HAVE_CAMV4L2_STR}")
 endif(DEFINED WITH_V4L)
 
 if(DEFINED WITH_DSHOW)
