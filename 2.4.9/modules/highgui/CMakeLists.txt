@@ -280,7 +280,7 @@ if(MSVC)
 endif()
 
 #stop automatic dependencies propagation for this module
-set_target_properties(${the_module} PROPERTIES LINK_INTERFACE_LIBRARIES "")
+#set_target_properties(${the_module} PROPERTIES LINK_INTERFACE_LIBRARIES "")
 
 ocv_add_precompiled_headers(${the_module})
 ocv_warnings_disable(CMAKE_CXX_FLAGS -Wno-deprecated-declarations)

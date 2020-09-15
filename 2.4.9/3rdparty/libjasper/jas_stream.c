@@ -363,10 +363,10 @@ jas_stream_t *jas_stream_tmpfile()
     obj->flags = 0;
     stream->obj_ = obj;
 
+#ifdef _WIN32
     /* Choose a file name. */
     tmpnam(obj->pathname);
 
-#ifdef _WIN32
     /* Open the underlying file. */
     if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,
       JAS_STREAM_PERMS)) < 0) {
@@ -375,7 +375,7 @@ jas_stream_t *jas_stream_tmpfile()
     }
 #else
     /* Choose a file name. */
-//    snprintf(obj->pathname, L_tmpnam, "%s/tmp.XXXXXXXXXX", P_tmpdir); //Not in c99
+    snprintf(obj->pathname, L_tmpnam, "%s/tmp.XXXXXXXXXX", P_tmpdir); //Not in c99
 
     /* Open the underlying file. */
     if ((obj->fd = mkstemp(obj->pathname)) < 0) {

@@ -32,13 +32,7 @@ include (evrt)
 # --------------------------------------------------------------
 # Top level OpenCV project
 # --------------------------------------------------------------
-if(CMAKE_GENERATOR MATCHES Xcode AND XCODE_VERSION VERSION_GREATER 4.3)
-  cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
-elseif(IOS)
-  cmake_minimum_required(VERSION 2.8.0)
-else()
-  cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
-endif()
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 if(POLICY CMP0017)
   cmake_policy(SET CMP0017 NEW)
@@ -151,7 +145,7 @@ OCV_OPTION(WITH_CUBLAS         "Include NVidia Cuda Basic Linear Algebra Subprog
 OCV_OPTION(WITH_NVCUVID        "Include NVidia Video Decoding library support"                               OFF )
 OCV_OPTION(WITH_EIGEN          "Include Eigen2/Eigen3 support"               ON)
 OCV_OPTION(WITH_VFW            "Include Video for Windows support"           ON   IF WIN32 )
-OCV_OPTION(WITH_FFMPEG         "Include FFMPEG support"                      ON   IF (NOT ANDROID AND NOT IOS))
+OCV_OPTION(WITH_FFMPEG         "Include FFMPEG support"                      OFF )
 OCV_OPTION(WITH_GSTREAMER      "Include Gstreamer support"                   ON   IF (UNIX AND NOT APPLE AND NOT ANDROID) )
 OCV_OPTION(WITH_GTK            "Include GTK support"                         ON   IF (UNIX AND NOT APPLE AND NOT ANDROID) )
 OCV_OPTION(WITH_IMAGEIO        "ImageIO support for OS X"                    OFF  IF APPLE )
