@@ -564,14 +564,14 @@ if(NOT (${var} GREATER -1))
  if (NOT HOST)
   # Include directory (for evthreads.h)
   include_directories(${EVRT_INSTALL_DIR}/include)
-  include_directories(${EVRT_INSTALL_DIR}/include/VX/framework)
-  include_directories(${EVRT_INSTALL_DIR}/include/VX/debug)
 
   include(evrt)
   find_package(evthreads CONFIG)
 
-  # Link with Vision runtime Library
-  target_link_libraries(${the_module}  evthreads::evthreads)
+  # Link with Vision runtime Library, but only once
+  if("${the_module}" MATCHES "opencv_core")
+    target_link_libraries(${the_module}  evthreads::evthreads)
+  endif()
  endif()
 endif()
 
